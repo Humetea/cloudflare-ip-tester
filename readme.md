@@ -1,6 +1,6 @@
 # Cloudflare IP 在线测试工具
 
-[演示地址https://test.33322111.xyz ](https://test.33322111.xyz) 
+[演示地址http://test.33322111.xyz ](http://test.33322111.xyz) 
 
 目前不支持启用SSL，除非你域名有通配符SSL证书，cloudflare免费版只支持单一域名证书，比如a.xxx.com开启SSL，而*.a.xxx.com无法通过https访问，涉及到测速原理，有兴趣可研究。
 
