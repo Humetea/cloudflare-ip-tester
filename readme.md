@@ -2,7 +2,7 @@
 
 [演示地址http://test.33322111.xyz ](http://test.33322111.xyz) 
 
-不支持启用SSL，除非你域名有通配符SSL证书，cloudflare免费版只支持单一域名证书，比如a.xxx.com开启SSL，而*.a.xxx.com无法通过https访问，涉及到测速原理，有兴趣可研究。
+目前不支持启用SSL，除非你域名有通配符SSL证书，cloudflare免费版只支持单一域名证书，比如a.xxx.com开启SSL，而*.a.xxx.com无法通过https访问，涉及到测速原理，有兴趣可研究。
 
 ## 原有功能
 
@@ -30,7 +30,8 @@
 5.  Cloudflare后台：新建Workers，复制项目中Cloudflare Workers配置文件的代码，记得修改 “ xxx.com ” 为自己域名，并为Workers添加路由 “ *.自己域名/* ”
    注意：访问该自己部署的项目网页时，以 “ http:// ”开头，如果浏览器提示不安全，忽视即可
 
-
+##  如何部署
+ 重构域名访问方法，使其支持SSL证书。
 
 ## 🙏 致谢
 
