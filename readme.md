@@ -23,9 +23,9 @@
 
 ##  如何部署
 
-1.  forks项目，修改forks项目下script.js文件第1行的域名为自己域名，然后找到该项目下Settings的Pages，Branch选择master /root文件夹，输入自定义域名Custom domain，勾选Enforce HTTPS（非常重要）save部署。
+1.  forks项目，修改forks项目下script.js文件第1行的域名为自己域名，然后找到该项目下Settings的Pages，Branch选择master /root文件夹，输入自定义域名Custom domain，勾选Enforce HTTPS 保存部署。
 2.  自己域名NS托管到Cloudflare，同时再添加三条NS记录：ns-hetzner.sslip.io、ns-ovh.sslip.io、ns-do-sg.sslip.io，只支持@记录，解析一级域名。
-3.  Cloudflare后台：DNS--设置--开启多提供商 DNS；DNS记录 CNAME解析自己域名到该Github项目Pages网址，成功CNAME后，Github项目下会有个CNAME文件，内容为自己域名。
+3.  Cloudflare后台：DNS--设置--开启多提供商 DNS；DNS记录 CNAME解析自己域名到该Github项目Pages网址，成功CNAME后，可开启橙色云朵，对应的Github项目下会有个CNAME文件，内容为自己域名。
 4.  Cloudflare后台：SSL/TLS 加密设置为严格。
 5.  Cloudflare后台：新建Workers，复制项目中Cloudflare Workers配置文件的代码，记得修改 “ xxx.com ” 为自己域名，并为Workers添加路由 “ *.自己域名/* ”。
 
