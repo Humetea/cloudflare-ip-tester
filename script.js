@@ -147,8 +147,10 @@ function tcping(addr, callback, id) {
     }
     http.onload = function () {
         var resp = http.responseText
-        var loc = resp.split("\n")[6].split("=")[1]
-        table.updateData([{ id: id, region: loc }])
+        if (resp && resp.split("\n")[6]) {
+            var loc = resp.split("\n")[6].split("=")[1]
+            table.updateData([{ id: id, region: loc }])
+        }
     }
     http.timeout = respondTimeout
     http.send(null)
@@ -167,7 +169,7 @@ $("#test-respond").click(function () {
         selectedRows.forEach(function (row, i) {
             var one = row.getData()
             setTimeout(function () {
-                addr = "//" + one.ip.replace(/\./g, "-") + urlprefix + pingUrl + "?" + Math.random()
+                addr = "//" + one.ip.replace(/[\.:]/g, "-") + urlprefix + pingUrl + "?" + Math.random()
                 // break cache (set the header of request or origin is not enough in Firefox)
                 tcping(addr, tcpingCallback, one.id)
             }, pingInterval * (i + sn / 100))
@@ -176,14 +178,6 @@ $("#test-respond").click(function () {
             table.redraw(true)
             $("#test-respond").prop("disabled", false)
         }, pingInterval * (sn + 2))
-        // may cause performance problem
-        /*
-        if (sn > 30) {
-            setTimeout(function () {
-                table.redraw(true)  
-            }, pingInterval * 20)
-        }
-        */
     }
 })
 
@@ -248,14 +242,7 @@ function speedRecur(list, i) {
     var started = window.performance.now()
     var http = new XMLHttpRequest()
     http.open("GET", addr, true)
-    http.onreadystatechange = function () {
-        /*
-        cut the initialization time can be more accurate (or the speed will show a state of slow climbing)
-        but meeting dash 
-        if (http.readyState == 2)
-            started = window.performance.now() 
-        */
-    }
+    http.onreadystatechange = function () { }
     http.loadr = 0
     http.onloadend = function (e) { //
         var rbytes = (e.loaded == 0) ? http.loadr : e.loaded // In Firefox, error or timeout will always return 0
@@ -288,7 +275,7 @@ $("#test-speed").click(function () {
             var one = row.getData()
             sList.push({
                 id: one.id,
-                addr: "//" + one.ip.replace(/\./g, "-") + urlprefix + imgUrls[imgi] + "?" + Math.random()
+                addr: "//" + one.ip.replace(/[\.:]/g, "-") + urlprefix + imgUrls[imgi] + "?" + Math.random()
             })
         })
         speedRecur(sList, 0) // Make sure run in turn
@@ -302,6 +289,7 @@ function tablemake(data) {
     var initData = []
     ip_list = data.split("\n")
     ip_list.forEach(function (one_ip) {
+        if(one_ip.trim() === "") return;
         initData.push({
             id: idn,
             ip: one_ip,
