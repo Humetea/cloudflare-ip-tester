@@ -12,7 +12,7 @@
   <script type="text/javascript" src="https://unpkg.com/tabulator-tables@4.7.2/dist/js/tabulator.min.js"></script>
   <style>
     .table.panel .col { margin-bottom: 10px; }
-    #v4-number, #v6-number { width: 50px; }
+    #generate-number { width: 65px; }
     #stop-test {
       background-color: #e74c3c !important;
       color: white !important;
@@ -30,15 +30,10 @@
   <div class="table panel">
     <div class="line">
       <div class="col">
-        <button class="button big" id="generate-ip">生成IP列表</button>
-        <div class="line" style="flex-direction: column; align-items: flex-start;">
-          <div>
-            <span style="font-size: 12px;">v4:</span>
-            <input id="v4-number" class="border" type="number" value="100" min="0" max="5000"></input>
-            <span style="font-size: 12px; margin-left: 5px;">v6:</span>
-            <input id="v6-number" class="border" type="number" value="100" min="0" max="5000"></input>
-          </div>
-          <span id="total-tip" style="font-size: 11px; color: #666; margin-top: 2px;">总数不超过5000个</span>
+        <button class="button big" id="generate-ip">生成IP数量</button>
+        <div class="line">
+          <input id="generate-number" class="border" type="number" value="200" min="1" max="5000"></input>
+          <span style="font-size: 14px; align-self: center; margin-left: 5px;">个</span>
         </div>
       </div>
 
@@ -83,59 +78,30 @@
     function ipToInt(ip) { return ip.split('.').reduce((res, item) => (res << 8) + parseInt(item), 0) >>> 0; }
     function intToIp(int) { return [(int >>> 24) & 0xff, (int >>> 16) & 0xff, (int >>> 8) & 0xff, int & 0xff].join('.'); }
 
-    function generateRandomIPv6(prefix, mask) {
-        let parts = prefix.split(':').filter(p => p !== '');
-        while(parts.length < 8) parts.push('0');
-        if (mask === 32) {
-            parts[2] = Math.floor(Math.random() * 65536).toString(16);
-            parts[3] = Math.floor(Math.random() * 65536).toString(16);
-        } else if (mask === 29) {
-            let base2 = parseInt(parts[1], 16);
-            parts[1] = (base2 + Math.floor(Math.random() * 8)).toString(16);
-            parts[2] = Math.floor(Math.random() * 65536).toString(16);
-            parts[3] = Math.floor(Math.random() * 65536).toString(16);
-        }
-        for (let i = 4; i < 8; i++) {
-            parts[i] = Math.floor(Math.random() * 65536).toString(16);
-        }
-        return parts.join(':');
-    }
-
-    function generateCloudflareIPs(v4Count, v6Count) {
+    function generateCloudflareIPs(count) {
+        const cidrs = ["103.21.244.0/22", "103.22.200.0/22", "103.31.4.0/22", "104.16.0.0/13", "104.24.0.0/14", "108.162.192.0/18", "131.0.72.0/22", "141.101.64.0/18", "162.158.0.0/15", "172.64.0.0/13", "173.245.48.0/20", "188.114.96.0/20", "190.93.240.0/20", "197.234.240.0/22", "198.41.128.0/17"];
+        let allCSubnets = [];
+        cidrs.forEach(cidr => {
+            let [ip, mask] = cidr.split('/');
+            let startInt = ipToInt(ip);
+            let numIPs = Math.pow(2, 32 - parseInt(mask));
+            for (let i = 0; i < numIPs; i += 256) { allCSubnets.push(startInt + i); }
+        });
+        allCSubnets.sort(() => Math.random() - 0.5);
         let selectedIPs = [];
-        if (v4Count > 0) {
-            const cidrs = ["103.21.244.0/22", "103.22.200.0/22", "103.31.4.0/22", "104.16.0.0/13", "104.24.0.0/14", "108.162.192.0/18", "131.0.72.0/22", "141.101.64.0/18", "162.158.0.0/15", "172.64.0.0/13", "173.245.48.0/20", "188.114.96.0/20", "190.93.240.0/20", "197.234.240.0/22", "198.41.128.0/17"];
-            let allCSubnets = [];
-            cidrs.forEach(cidr => {
-                let [ip, mask] = cidr.split('/');
-                let startInt = ipToInt(ip);
-                let numIPs = Math.pow(2, 32 - parseInt(mask));
-                for (let i = 0; i < numIPs; i += 256) { allCSubnets.push(startInt + i); }
-            });
-            allCSubnets.sort(() => Math.random() - 0.5);
-            let actualV4 = Math.min(v4Count, allCSubnets.length);
-            for (let i = 0; i < actualV4; i++) {
-                let baseIpInt = allCSubnets[i];
-                selectedIPs.push(intToIp(baseIpInt + Math.floor(Math.random() * 254) + 1));
-            }
-        }
-        if (v6Count > 0) {
-            const v6cidrs = [{p: "2400:cb00::", m: 32}, {p: "2606:4700::", m: 32}, {p: "2803:f800::", m: 32}, {p: "2405:b500::", m: 32}, {p: "2405:8100::", m: 32}, {p: "2a06:98c0::", m: 29}, {p: "2c0f:f248::", m: 32}];
-            for (let i = 0; i < v6Count; i++) {
-                let config = v6cidrs[Math.floor(Math.random() * v6cidrs.length)];
-                selectedIPs.push(generateRandomIPv6(config.p, config.m));
-            }
+        let actualCount = Math.min(count, allCSubnets.length);
+        for (let i = 0; i < actualCount; i++) {
+            let baseIpInt = allCSubnets[i];
+            selectedIPs.push(intToIp(baseIpInt + Math.floor(Math.random() * 254) + 1));
         }
         return selectedIPs.join('\n');
     }
 
     function refreshTable() {
-        let v4num = parseInt($("#v4-number").val()) || 0;
-        let v6num = parseInt($("#v6-number").val()) || 0;
-        if (v4num + v6num > 5000) { alert("总数不能超过5000个"); return; }
+        let num = parseInt($("#generate-number").val()) || 200;
         idn = 0; 
         if (window.database) { for (var key in database) delete database[key]; }
-        tablemake(generateCloudflareIPs(v4num, v6num));
+        tablemake(generateCloudflareIPs(num));
         $("#select-number").attr("max", idn);
     }
 
@@ -147,13 +113,17 @@
             $("#img-select").prop("disabled", false);
             return;
         }
+
         if (i == 3) table.redraw(true);
+
         var one = list[i];
         var id = one.id;
         var addr = one.addr;
         var started = window.performance.now();
+        
         var http = new XMLHttpRequest();
         currentXHR = http; 
+
         http.open("GET", addr, true);
         http.loadr = 0;
         http.onloadend = function (e) {
@@ -176,12 +146,16 @@
 
     $("#stop-test").click(function() {
         stopTest = true;
+        
         respondTimeouts.forEach(tid => clearTimeout(tid));
         respondTimeouts = [];
+        
         if (currentXHR) {
             currentXHR.abort();
             currentXHR = null;
+            console.log("Active download aborted.");
         }
+
         $("#test-respond, #test-speed, #img-select").prop("disabled", false);
         alert("测试已立即强制停止");
     });
@@ -197,9 +171,7 @@
                 var one = row.getData();
                 var tid = setTimeout(() => {
                     if (stopTest) return;
-                    // 直接转换，不加任何前缀，sslip.io 对 8 段连字符 AAAA 记录支持良好
-                    var addr = "//" + one.ip.replace(/[\.:]/g, "-") + urlprefix + pingUrl + "?" + Math.random();
-                    tcping(addr, tcpingCallback, one.id);
+                    tcping("//" + one.ip.replace(/\./g, "-") + urlprefix + pingUrl + "?" + Math.random(), tcpingCallback, one.id);
                 }, pingInterval * (i + selectedRows.length / 100));
                 respondTimeouts.push(tid);
             });
