@@ -1,4 +1,4 @@
-var urlprefix = ".test.33322111.xyz"   //修改为自己的域名，如xxx.com，即“ .xxx.com ”，前面的“.”不要去掉
+var urlprefix = ".test.33322111.xyz"   //修改为自己的域名
 var imgUrls = ["/img/s.webp", "/img/m.webp", "/img/l.webp"]
 var imgBytes = [117902, 1263924, 10914532]
 var imgi = 1
@@ -10,41 +10,28 @@ var speedTimeout = 30000
 var idn = 0
 var database = {}
 
-
 // Main Table
 options = {
     selectable: true,
     layout: "fitDataTable",
     downloadRowRange: "selected",
-    rowSelected: function (row) {
-        select_1()
-    },
+    rowSelected: function (row) { select_1() },
     rowDeselected: function (row) {
         var selectedRows = table.getSelectedRows()
-        if (selectedRows.length == 0)
-            select_0()
+        if (selectedRows.length == 0) select_0()
     },
     columns: [
         { title: "IP 地址", field: "ip" ,width: 120},
         { title: "机房位置（colo）", field: "region" ,width: 180},
-        {
-            title: "响应时间", field: "time", sorter: "number", sorterParams: {
-                alignEmptyValues: "bottom",
-            } ,width: 150
-        },
-        {
-            title: "下载速度", field: "speed", sorter: "number", sorterParams: {
-                alignEmptyValues: "bottom",
-            } ,width: 150
-        },
+        { title: "响应时间", field: "time", sorter: "number", sorterParams: { alignEmptyValues: "bottom" }, width: 150 },
+        { title: "下载速度", field: "speed", sorter: "number", sorterParams: { alignEmptyValues: "bottom" }, width: 150 },
     ],
 }
 if (typeof (page) != 'undefined' && page) {
-    options.pagination = "local" // pagination may cause problem in mobile devices
+    options.pagination = "local"
     options.paginationSize = page
 }
 table = new Tabulator("#main-table", options)
-
 
 // Panel
 function select_0() {
@@ -57,11 +44,9 @@ function select_1() {
 }
 $("#select-all").click(function () {
     if ($("#select-all").attr("status") == 0) {
-        table.selectRow()
-        select_1()
+        table.selectRow(); select_1()
     } else {
-        table.deselectRow()
-        select_0()
+        table.deselectRow(); select_0()
     }
 })
 
@@ -70,79 +55,49 @@ $("#select-random").click(function () {
     var idList = []
     var cList = []
     var sn = $("#select-number").val()
-    table.getRows().forEach(function (one) {
-        idList.push(one.getData().id)
-    })
+    table.getRows().forEach(function (one) { idList.push(one.getData().id) })
     for (var i = 0; i < sn; i++) {
         var s = Math.floor(Math.random() * idList.length)
         cList.push(idList.splice(s, 1)[0])
-
     }
     table.selectRow(cList.sort())
 })
 
 $("#download").click(function () {
     table.download("csv", "test_result.csv", { bom: true })
-    // include BOM to ensure that UTF-8 characters can be correctly interpereted
 })
-
 
 // Respond time test
 function tcpingCallback(time, id) {
     var timebase = database[id].time
     timebase.push(time)
-    var str = ""
-    var alln = timebase.length - 1
-    var validset = []
-    var sum = 0
-    timebase.slice(1).forEach(function (one) {
-        if (one > 0) {
-            validset.push(one)
-            sum += one
-        }
-    })
-    var validn = validset.length
-    var mean = sum / validn
+    var str = ""; var alln = timebase.length - 1; var validset = []; var sum = 0
+    timebase.slice(1).forEach(function (one) { if (one > 0) { validset.push(one); sum += one } })
+    var validn = validset.length; var mean = sum / validn
     if (validn >= 2) {
         str = " (" + validn + "/" + alln + ")"
-        var sumsq = 0
-        validset.forEach(function (one) {
-            sumsq += Math.pow(one - mean, 2)
-        })
+        var sumsq = 0; validset.forEach(function (one) { sumsq += Math.pow(one - mean, 2) })
         var std = Math.sqrt(sumsq / validn)
         str = mean.toFixed(1) + "ms" + " σ=" + std.toFixed(1) + str
-    }
-    else if (validn == 1 && alln > 0) {
-        str = mean.toFixed(1) + "ms" + str + " (" + validn + "/" + alln + ")"
-    }
-    else if (validn == 0 && alln == 0 && time > 1) {
-        str = time.toFixed(1) + "ms" + str + " (warm-up)"
-    }
-    else {
-        str = "Timeout" + str
-    }
+    } else if (validn == 1 && alln > 0) {
+        str = mean.toFixed(1) + "ms (" + validn + "/" + alln + ")"
+    } else if (validn == 0 && alln == 0 && time > 1) {
+        str = time.toFixed(1) + "ms (warm-up)"
+    } else { str = "Timeout" }
     table.updateData([{ id: id, time: str }])
 }
 
 function tcping(addr, callback, id) {
-    //var started = new Date().getTime()
     var started = window.performance.now()
     var http = new XMLHttpRequest()
     http.open("GET", addr, true)
     http.setRequestHeader('Accept', 'text/html')
     http.onreadystatechange = function () {
         if (http.readyState == 2) {
-            //var ended = new Date().getTime()
-            var ended = window.performance.now()
-            var milliseconds = ended - started
-            if (callback != null) {
-                callback(milliseconds, id)
-                callback = null
-            }
-        }
-        else if (http.readyState == 4) {
-            if (callback != null)
-                callback(-1, id)
+            var ended = window.performance.now(); var milliseconds = ended - started
+            if (callback != null) { callback(milliseconds, id); callback = null }
+        } else if (http.readyState == 4) {
+            if (callback != null) callback(-1, id)
         }
     }
     http.onload = function () {
@@ -156,9 +111,7 @@ function tcping(addr, callback, id) {
     http.send(null)
 }
 
-var positionSort = function (a, b) {
-    return a.getPosition(true) - b.getPosition(true)
-}
+var positionSort = function (a, b) { return a.getPosition(true) - b.getPosition(true) }
 
 $("#test-respond").click(function () {
     var selectedRows = table.getSelectedRows()
@@ -169,139 +122,85 @@ $("#test-respond").click(function () {
         selectedRows.forEach(function (row, i) {
             var one = row.getData()
             setTimeout(function () {
-                addr = "//" + one.ip.replace(/[\.:]/g, "-") + urlprefix + pingUrl + "?" + Math.random()
-                // break cache (set the header of request or origin is not enough in Firefox)
+                // 直接转换连字符地址
+                var addr = "//" + one.ip.replace(/[\.:]/g, "-") + urlprefix + pingUrl + "?" + Math.random()
                 tcping(addr, tcpingCallback, one.id)
             }, pingInterval * (i + sn / 100))
         })
         setTimeout(function () {
-            table.redraw(true)
-            $("#test-respond").prop("disabled", false)
+            table.redraw(true); $("#test-respond").prop("disabled", false)
         }, pingInterval * (sn + 2))
     }
 })
 
-
 // Speed test
 function speedProgressCallback(rbytes, time, id) {
-    var rate = rbytes / imgBytes[imgi] * 100
     var speed = (rbytes / 1024) / (time / 1000)
-    var str = speed.toFixed(1) + " KB/s " + rate.toFixed(1) + " %"
+    var str = speed.toFixed(1) + " KB/s " + (rbytes / imgBytes[imgi] * 100).toFixed(1) + " %"
     table.updateData([{ id: id, speed: str }])
 }
 
 function speedEndCallback(rbytes, time, id) {
     var speed = (rbytes / 1024) / (time / 1000)
     database[id].speed.push(speed)
-    var alln = database[id].speed.length
-    var validset = []
-    var sum = 0
+    var alln = database[id].speed.length; var validset = []; var sum = 0
     database[id].speed.forEach(function (one) {
-        if (one > 0 && rbytes / imgBytes[imgi] > 0.05) { // in case 403
-            validset.push(one)
-            sum += one
-        }
+        if (one > 0 && rbytes / imgBytes[imgi] > 0.05) { validset.push(one); sum += one }
     })
-    var validn = validset.length
-    var mean = sum / validn
-    var str = ""
+    var validn = validset.length; var mean = sum / validn; var str = ""
     if (validn > 1) {
-        str = " (" + validn + "/" + alln + ")"
-        var sumsq = 0
-        validset.forEach(function (one) {
-            sumsq += Math.pow(one - mean, 2)
-        })
-        var std = Math.sqrt(sumsq / validn)
-        str = mean.toFixed(1) + " KB/s" + " σ=" + std.toFixed(1) + str
-    }
-    else if (validn == 1) {
-        str = mean.toFixed(1) + " KB/s" + str
-    }
-    else {
-        str = "Error" + str
-    }
+        var sumsq = 0; validset.forEach(function (one) { sumsq += Math.pow(one - mean, 2) })
+        str = mean.toFixed(1) + " KB/s σ=" + Math.sqrt(sumsq / validn).toFixed(1) + " (" + validn + "/" + alln + ")"
+    } else if (validn == 1) {
+        str = mean.toFixed(1) + " KB/s"
+    } else { str = "Error" }
     table.updateData([{ id: id, speed: str }])
-
 }
 
 function speedRecur(list, i) {
     if (i >= list.length) {
-        table.redraw(true)
-        $("#test-speed").prop("disabled", false)
-        $("#img-select").prop("disabled", false)
-        return
+        table.redraw(true); $("#test-speed, #img-select").prop("disabled", false); return
     }
-    else if (i == 3) {
-        table.redraw(true)
-    }
-
-    var one = list[i]
-    var id = one.id
-    var addr = one.addr
-    //var started = new Date().getTime()
-    var started = window.performance.now()
+    if (i == 3) table.redraw(true)
+    var one = list[i]; var id = one.id; var addr = one.addr; var started = window.performance.now()
     var http = new XMLHttpRequest()
-    http.open("GET", addr, true)
-    http.onreadystatechange = function () { }
-    http.loadr = 0
-    http.onloadend = function (e) { //
-        var rbytes = (e.loaded == 0) ? http.loadr : e.loaded // In Firefox, error or timeout will always return 0
-        var ended = window.performance.now()
-        var milliseconds = ended - started
-        speedEndCallback(rbytes, milliseconds, id)
-        speedRecur(list, i + 1)
+    http.open("GET", addr, true); http.loadr = 0
+    http.onloadend = function (e) {
+        var rbytes = (e.loaded == 0) ? http.loadr : e.loaded
+        speedEndCallback(rbytes, window.performance.now() - started, id); speedRecur(list, i + 1)
     }
     http.onprogress = function (e) {
-        var rbytes = e.loaded
-        http.loadr = rbytes
-        var ended = window.performance.now()
-        var milliseconds = ended - started
-        if (milliseconds > 100) // fix first jump
-            speedProgressCallback(rbytes, milliseconds, id)
+        http.loadr = e.loaded; var ms = window.performance.now() - started
+        if (ms > 100) speedProgressCallback(e.loaded, ms, id)
     }
-    http.timeout = speedTimeout
-    http.send()
+    http.timeout = speedTimeout; http.send()
 }
 
 $("#test-speed").click(function () {
     imgi = $("#img-select").val()
     var selectedRows = table.getSelectedRows()
     if (selectedRows.length > 0) {
-        $("#test-speed").prop("disabled", true)
-        $("#img-select").prop("disabled", true)
-        selectedRows.sort(positionSort)
-        sList = []
+        $("#test-speed, #img-select").prop("disabled", true)
+        selectedRows.sort(positionSort); sList = []
         selectedRows.forEach(function (row) {
             var one = row.getData()
             sList.push({
                 id: one.id,
+                // 直接转换
                 addr: "//" + one.ip.replace(/[\.:]/g, "-") + urlprefix + imgUrls[imgi] + "?" + Math.random()
             })
         })
-        speedRecur(sList, 0) // Make sure run in turn
+        speedRecur(sList, 0)
     }
-
 })
-
 
 // Entry
 function tablemake(data) {
     var initData = []
-    ip_list = data.split("\n")
-    ip_list.forEach(function (one_ip) {
+    data.split("\n").forEach(function (one_ip) {
         if(one_ip.trim() === "") return;
-        initData.push({
-            id: idn,
-            ip: one_ip,
-            time: "",
-            speed: ""
-        })
-        database[idn] = {
-            time: [],
-            speed: []
-        }
-        idn += 1
+        initData.push({ id: idn, ip: one_ip, time: "", speed: "" })
+        database[idn] = { time: [], speed: [] }; idn += 1
     })
-    table.replaceData(initData)
-    $("#select-number").attr("max", idn)
+    table.replaceData(initData); $("#select-number").attr("max", idn)
 }
