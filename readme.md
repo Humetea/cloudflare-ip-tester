@@ -31,7 +31,7 @@
 
 ##  计划更新
  1. 增加Cloudflare Pages部署
-
+ 2. 增加ipv6测速功能
 ## 🙏 致谢
 
 本项目基于 [TulvL/cloudflare-ip-tester](https://github.com/TulvL/cloudflare-ip-tester) 做了些改进，感谢原作者TulvL的贡献。
