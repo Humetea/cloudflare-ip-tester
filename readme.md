@@ -1,8 +1,7 @@
 # Cloudflare IP 在线测试工具
 
-[演示地址http://test.33322111.xyz ](http://test.33322111.xyz) 
+[演示地址https://33322111.xyz ](https://33322111.xyz) 
 
-目前不支持启用SSL，除非你域名有通配符SSL证书，cloudflare免费版只支持单一域名证书，比如a.xxx.com开启SSL，而*.a.xxx.com无法通过https访问，涉及到测速原理，有兴趣可研究。
 
 ## 原有功能
 
@@ -20,6 +19,7 @@
 2. 添加停止测试功能
 3. 中文汉化
 4. Cloudflare IP段已固定在index文件代码，可自行修改
+5. 支持SSL，可以使用https://访问
 
 ##  如何部署
 
@@ -31,8 +31,7 @@
    注意：访问该自己部署的项目网页时，以 “ http:// ”开头，如果浏览器提示不安全，忽视即可
 
 ##  计划更新
- 1. 重构域名访问方法，使其支持SSL证书
- 2. 增加Cloudflare Pages部署
+ 1. 增加Cloudflare Pages部署
 
 ## 🙏 致谢
 
