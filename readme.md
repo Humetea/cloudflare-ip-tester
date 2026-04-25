@@ -1,6 +1,6 @@
 # Cloudflare IP 在线测试工具
 
-[演示地址http://test.33322111.xyz ](http://test.33322111.xyz) 
+[演示地址http://test.33322111.xyz ](http://test.33322111.xyz) 已开防护墙，仅CN区域访问可测速。
 
 
 ## 原有功能
@@ -19,7 +19,7 @@
 2. 添加停止测试功能
 3. 中文汉化
 4. Cloudflare IPV4段已固定在index文件代码，可自行修改
-5. 确认不支持SSL，不能使用"https://"访问
+5. 确认纯白嫖SSL支持不佳，已放弃，故不能使用"https://"访问
 
 ##  如何部署
 
