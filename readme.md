@@ -1,6 +1,6 @@
 # Cloudflare IP 在线测试工具
 
-[演示地址https://33322111.xyz ](https://33322111.xyz) 
+[演示地址http://test.33322111.xyz ](http://test.33322111.xyz) 
 
 
 ## 原有功能
@@ -18,15 +18,15 @@
 1. 添加随机生成IP数量（上限5000，下限1）
 2. 添加停止测试功能
 3. 中文汉化
-4. Cloudflare IP段已固定在index文件代码，可自行修改
-5. 支持SSL，可以使用"https://"访问
+4. Cloudflare IPV4段已固定在index文件代码，可自行修改
+5. 确认不支持SSL，不能使用"https://"访问
 
 ##  如何部署
 
-1.  forks项目，修改forks项目下script.js文件第1行的域名为自己域名，然后找到该项目下Settings的Pages，Branch选择master /root文件夹，输入自定义域名Custom domain，勾选Enforce HTTPS 保存部署。
-2.  自己域名服务商：NS托管到Cloudflare，同时还要添加三条NS记录：名称都填@，记录值分别为ns-hetzner.sslip.io、ns-ovh.sslip.io、ns-do-sg.sslip.io（只解析一级域名，因为cf免费版只对一级域名颁发通配型ssl证书，注意abc.xxx.com为二级域名）。
-3.  Cloudflare后台：DNS--设置--开启多提供商 DNS；DNS记录 CNAME解析自己域名到该Github项目Pages网址，成功CNAME后，可开启橙色云朵，对应的Github项目下会有个CNAME文件，内容为自己域名。
-4.  Cloudflare后台：SSL/TLS 加密设置为完全（严格）。
+1.  forks项目，修改forks项目下script.js文件第1行的域名为自己域名，然后找到该项目下Settings的Pages，Branch选择master /root文件夹，输入自定义域名Custom domain，不勾选Enforce HTTPS ，保存部署。
+2.  自己域名服务商：NS托管到Cloudflare。
+3. Cloudflare后台：DNS添加三条NS记录分别为ns-hetzner.sslip.io、ns-ovh.sslip.io、ns-do-sg.sslip.io，（注意此处为二级域名NS托管到sslip.io项目），DNS记录 CNAME解析自己域名到该Github项目Pages网址，成功CNAME后，对应的Github项目下会有个CNAME文件，内容为自己域名。
+4.  Cloudflare后台：SSL/TLS 加密设置为灵活。
 5.  Cloudflare后台：新建Workers，复制项目中Cloudflare Workers配置文件的代码，记得修改 “ xxx.com ” 为自己域名，并为Workers添加路由 “ *.自己域名/* ”。
 
 ##  计划更新
