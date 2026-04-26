@@ -119,7 +119,6 @@ function tcpingCallback(time, id) {
 }
 
 function tcping(addr, callback, id) {
-    //var started = new Date().getTime()
     var started = window.performance.now()
     var http = new XMLHttpRequest()
     http.open("GET", addr, true)
@@ -162,7 +161,6 @@ $("#test-respond").click(function () {
             var one = row.getData()
             setTimeout(function () {
                 addr = "//" + one.ip.replace(/\./g, "-").replace(/:/g, "-") + urlprefix + pingUrl + "?" + Math.random()
-                // break cache (set the header of request or origin is not enough in Firefox)
                 tcping(addr, tcpingCallback, one.id)
             }, pingInterval * (i + sn / 100))
         })
@@ -194,7 +192,7 @@ function speedEndCallback(rbytes, time, id) {
     var validset = []
     var sum = 0
     database[id].speed.forEach(function (one) {
-        if (one > 0 && rbytes / imgBytes[imgi] > 0.05) { // in case 403
+        if (one > 0 && rbytes / imgBytes[imgi] > 0.05) { 
             validset.push(one)
             sum += one
         }
@@ -276,14 +274,13 @@ $("#test-speed").click(function () {
         sList = []
         selectedRows.forEach(function (row) {
             var one = row.getData()
-            // 修改此处以兼容 IPv6 冒号转横杠
             var formattedIp = one.ip.replace(/\./g, "-").replace(/:/g, "-")
             sList.push({
                 id: one.id,
                 addr: "//" + formattedIp + urlprefix + imgUrls[imgi] + "?" + Math.random()
             })
         })
-        speedRecur(sList, 0) // Make sure run in turn
+        speedRecur(sList, 0)
     }
 
 })
