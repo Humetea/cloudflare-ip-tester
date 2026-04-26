@@ -6,7 +6,7 @@ const hostname = url.hostname;
 const sub = hostname.replace(`.${targetHost}`, "");
 const dashCount = (sub.match(/-/g) || []).length;
 
-if (dashCount < 4) {
+if (dashCount < 3) {
   return fetch(request);
 }
 
