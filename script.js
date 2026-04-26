@@ -12,6 +12,7 @@ var database = {}
 
 options = {
     selectable: true,
+    selectableRangeMode: "click",
     layout: "fitDataTable",
     downloadRowRange: "selected",
     rowSelected: function (row) {
@@ -23,7 +24,7 @@ options = {
             select_0()
     },
     columns: [
-        { title: "IP 地址", field: "ip" ,width: 200},
+        { title: "IP 地址", field: "ip" ,width: 200, editor: "input"},
         { title: "机房位置（colo）", field: "region" ,width: 180},
         {
             title: "响应时间", field: "time", sorter: "number", sorterParams: {
@@ -125,7 +126,6 @@ function tcping(addr, callback, id) {
     http.setRequestHeader('Accept', 'text/html')
     http.onreadystatechange = function () {
         if (http.readyState == 2) {
-            //var ended = new Date().getTime()
             var ended = window.performance.now()
             var milliseconds = ended - started
             if (callback != null) {
@@ -168,13 +168,6 @@ $("#test-respond").click(function () {
             table.redraw(true)
             $("#test-respond").prop("disabled", false)
         }, pingInterval * (sn + 2))
-        /*
-        if (sn > 30) {
-            setTimeout(function () {
-                table.redraw(true)  
-            }, pingInterval * 20)
-        }
-        */
     }
 })
 
@@ -236,16 +229,8 @@ function speedRecur(list, i) {
     var started = window.performance.now()
     var http = new XMLHttpRequest()
     http.open("GET", addr, true)
-    http.onreadystatechange = function () {
-        /*
-        cut the initialization time can be more accurate (or the speed will show a state of slow climbing)
-        but meeting dash 
-        if (http.readyState == 2)
-            started = window.performance.now() 
-        */
-    }
     http.loadr = 0
-    http.onloadend = function (e) { //
+    http.onloadend = function (e) { 
         var rbytes = (e.loaded == 0) ? http.loadr : e.loaded
         var ended = window.performance.now()
         var milliseconds = ended - started
