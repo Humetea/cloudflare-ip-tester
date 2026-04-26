@@ -1,4 +1,4 @@
-var urlprefix = ".testspeed.33322111.xyz"   //修改为自己的域名，如xxx.com，即“ .xxx.com ”，前面的“.”不要去掉
+var urlprefix = ".ip.tests.33322111.xyz"   //修改为自己的域名，如xxx.com，即“ .xxx.com ”，前面的“.”不要去掉
 var imgUrls = ["/img/s.webp", "/img/m.webp", "/img/l.webp"]
 var imgBytes = [117902, 1263924, 10914532]
 var imgi = 1
