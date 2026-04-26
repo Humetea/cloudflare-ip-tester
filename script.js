@@ -23,7 +23,7 @@ options = {
             select_0()
     },
     columns: [
-        { title: "IP 地址", field: "ip" ,width: 120},
+        { title: "IP 地址", field: "ip" ,width: 200},
         { title: "机房位置（colo）", field: "region" ,width: 180},
         {
             title: "响应时间", field: "time", sorter: "number", sorterParams: {
