@@ -18,7 +18,7 @@
 1. 添加随机生成IP数量（上限5000，下限1）
 2. 添加停止测试功能
 3. 中文汉化
-4. Cloudflare IPV4段已固定在index文件代码，可自行修改
+4.已支持IPV6测速，IPV4段、IPV6可用段（非全部段）已固定在index文件代码，可自行修改
 5. 确认纯白嫖SSL支持不佳，已放弃，故不能使用"https://"访问
 
 ##  如何部署
@@ -31,7 +31,6 @@
 
 ##  计划更新
  1. 增加Cloudflare Pages部署
- 2. 增加ipv6测速功能
 ## 🙏 致谢
 
 本项目基于 [TulvL/cloudflare-ip-tester](https://github.com/TulvL/cloudflare-ip-tester) 做了些改进，感谢原作者TulvL的贡献。
