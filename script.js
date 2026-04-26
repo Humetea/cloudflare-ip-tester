@@ -10,8 +10,6 @@ var speedTimeout = 30000
 var idn = 0
 var database = {}
 
-
-// Main Table
 options = {
     selectable: true,
     layout: "fitDataTable",
@@ -40,13 +38,12 @@ options = {
     ],
 }
 if (typeof (page) != 'undefined' && page) {
-    options.pagination = "local" // pagination may cause problem in mobile devices
+    options.pagination = "local" 
     options.paginationSize = page
 }
 table = new Tabulator("#main-table", options)
 
 
-// Panel
 function select_0() {
     $("#select-all").attr("status", 0)
     $("#select-all").text("选中所有的IP")
@@ -83,11 +80,8 @@ $("#select-random").click(function () {
 
 $("#download").click(function () {
     table.download("csv", "test_result.csv", { bom: true })
-    // include BOM to ensure that UTF-8 characters can be correctly interpereted
 })
 
-
-// Respond time test
 function tcpingCallback(time, id) {
     var timebase = database[id].time
     timebase.push(time)
@@ -167,7 +161,6 @@ $("#test-respond").click(function () {
         selectedRows.forEach(function (row, i) {
             var one = row.getData()
             setTimeout(function () {
-                // 修改此处以兼容 IPv6 冒号转横杠
                 addr = "//" + one.ip.replace(/\./g, "-").replace(/:/g, "-") + urlprefix + pingUrl + "?" + Math.random()
                 // break cache (set the header of request or origin is not enough in Firefox)
                 tcping(addr, tcpingCallback, one.id)
@@ -177,7 +170,6 @@ $("#test-respond").click(function () {
             table.redraw(true)
             $("#test-respond").prop("disabled", false)
         }, pingInterval * (sn + 2))
-        // may cause performance problem
         /*
         if (sn > 30) {
             setTimeout(function () {
@@ -188,8 +180,6 @@ $("#test-respond").click(function () {
     }
 })
 
-
-// Speed test
 function speedProgressCallback(rbytes, time, id) {
     var rate = rbytes / imgBytes[imgi] * 100
     var speed = (rbytes / 1024) / (time / 1000)
@@ -245,7 +235,6 @@ function speedRecur(list, i) {
     var one = list[i]
     var id = one.id
     var addr = one.addr
-    //var started = new Date().getTime()
     var started = window.performance.now()
     var http = new XMLHttpRequest()
     http.open("GET", addr, true)
@@ -259,7 +248,7 @@ function speedRecur(list, i) {
     }
     http.loadr = 0
     http.onloadend = function (e) { //
-        var rbytes = (e.loaded == 0) ? http.loadr : e.loaded // In Firefox, error or timeout will always return 0
+        var rbytes = (e.loaded == 0) ? http.loadr : e.loaded
         var ended = window.performance.now()
         var milliseconds = ended - started
         speedEndCallback(rbytes, milliseconds, id)
@@ -270,7 +259,7 @@ function speedRecur(list, i) {
         http.loadr = rbytes
         var ended = window.performance.now()
         var milliseconds = ended - started
-        if (milliseconds > 100) // fix first jump
+        if (milliseconds > 100) 
             speedProgressCallback(rbytes, milliseconds, id)
     }
     http.timeout = speedTimeout
@@ -300,12 +289,11 @@ $("#test-speed").click(function () {
 })
 
 
-// Entry
 function tablemake(data) {
     var initData = []
     ip_list = data.split("\n")
     ip_list.forEach(function (one_ip) {
-        if(one_ip.trim() == "") return; // 避免生成空行
+        if(one_ip.trim() == "") return; 
         initData.push({
             id: idn,
             ip: one_ip,
