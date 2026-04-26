@@ -20,6 +20,20 @@
     }
     #stop-test:hover { background-color: #c0392b !important; }
     .line .button { margin-left: 2px; }
+    
+    .input-align-box {
+      display: inline-flex;
+      align-items: center;
+      font-size: 14px;
+      height: 34px;
+      padding: 0 5px;
+      color: #333;
+    }
+    .input-align-box input {
+      margin: 0 2px;
+      height: 24px;
+      font-size: 14px;
+    }
   </style>
 </head>
 
@@ -31,7 +45,7 @@
     <div class="line">
       <div class="col">
         <button class="button big" id="generate-ip">生成IP数量</button>
-        <div class="line" style="font-size: 18px; align-self: center;">
+        <div class="line input-align-box">
           ipv4: <input id="generate-v4" class="border" type="number" value="200" min="0" max="5000"></input>
           ipv6: <input id="generate-v6" class="border" type="number" value="0" min="0" max="5000"></input>
           <span style="margin-left: 5px;">个</span>
@@ -108,13 +122,10 @@
             v6cidrs.forEach((cidr, index) => {
                 let countToGen = perCidr + (index < remainder ? 1 : 0);
                 if (countToGen <= 0) return;
-
-                // 修复逻辑：提取 :: 之前的所有段作为前缀
                 let prefix = cidr.split('/')[0].split('::')[0];
                 
                 for (let i = 0; i < countToGen; i++) {
                     let hex = Math.floor(Math.random() * 65535 + 1).toString(16);
-                    // 拼接：前缀 + 随机段 + ::1
                     selectedIPs.push(prefix + ":" + hex + "::1");
                 }
             });
@@ -148,7 +159,7 @@
         if (i == 3) table.redraw(true);
 
         var one = list[i];
-        var id = id = one.id;
+        var id = one.id;
         var addr = one.addr;
         var started = window.performance.now();
         
