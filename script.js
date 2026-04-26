@@ -1,4 +1,4 @@
-var urlprefix = ".test.33322111.xyz"   //修改为自己的域名，如xxx.com，即“ .xxx.com ”，前面的“.”不要去掉.
+var urlprefix = ".test.33322111.xyz"   //修改为自己的域名，如xxx.com，即“ .xxx.com ”，前面的“.”不要去掉
 var imgUrls = ["/img/s.webp", "/img/m.webp", "/img/l.webp"]
 var imgBytes = [117902, 1263924, 10914532]
 var imgi = 1
@@ -6,12 +6,9 @@ var pingInterval = 100
 var pingUrl = "/cdn-cgi/trace"
 var respondTimeout = 4000
 var speedTimeout = 30000
-
 var idn = 0
 var database = {}
 
-
-// Main Table
 options = {
     selectable: true,
     layout: "fitDataTable",
@@ -40,13 +37,11 @@ options = {
     ],
 }
 if (typeof (page) != 'undefined' && page) {
-    options.pagination = "local" // pagination may cause problem in mobile devices
+    options.pagination = "local" 
     options.paginationSize = page
 }
 table = new Tabulator("#main-table", options)
 
-
-// Panel
 function select_0() {
     $("#select-all").attr("status", 0)
     $("#select-all").text("选中所有的IP")
@@ -83,7 +78,6 @@ $("#select-random").click(function () {
 
 $("#download").click(function () {
     table.download("csv", "test_result.csv", { bom: true })
-    // include BOM to ensure that UTF-8 characters can be correctly interpereted
 })
 
 
@@ -176,8 +170,6 @@ $("#test-respond").click(function () {
             table.redraw(true)
             $("#test-respond").prop("disabled", false)
         }, pingInterval * (sn + 2))
-        // may cause performance problem
-        /*
         if (sn > 30) {
             setTimeout(function () {
                 table.redraw(true)  
@@ -188,7 +180,6 @@ $("#test-respond").click(function () {
 })
 
 
-// Speed test
 function speedProgressCallback(rbytes, time, id) {
     var rate = rbytes / imgBytes[imgi] * 100
     var speed = (rbytes / 1024) / (time / 1000)
@@ -257,8 +248,8 @@ function speedRecur(list, i) {
         */
     }
     http.loadr = 0
-    http.onloadend = function (e) { //
-        var rbytes = (e.loaded == 0) ? http.loadr : e.loaded // In Firefox, error or timeout will always return 0
+    http.onloadend = function (e) { 
+        var rbytes = (e.loaded == 0) ? http.loadr : e.loaded 
         var ended = window.performance.now()
         var milliseconds = ended - started
         speedEndCallback(rbytes, milliseconds, id)
@@ -286,9 +277,10 @@ $("#test-speed").click(function () {
         sList = []
         selectedRows.forEach(function (row) {
             var one = row.getData()
+            var formattedIp = one.ip.replace(/\./g, "-").replace(/:/g, "-")
             sList.push({
                 id: one.id,
-                addr: "//" + one.ip.replace(/\./g, "-").replace(/:/g, "-") + urlprefix + imgUrls[imgi] + "?" + Math.random()
+                addr: "//" + formattedIp + urlprefix + imgUrls[imgi] + "?" + Math.random()
             })
         })
         speedRecur(sList, 0) // Make sure run in turn
@@ -296,12 +288,11 @@ $("#test-speed").click(function () {
 
 })
 
-
-// Entry
 function tablemake(data) {
     var initData = []
     ip_list = data.split("\n")
     ip_list.forEach(function (one_ip) {
+        if(one_ip.trim() == "") return; 
         initData.push({
             id: idn,
             ip: one_ip,
