@@ -1,4 +1,20 @@
 var urlprefix = ".speed.t.33322111.xyz"   //修改为自己的域名，如xxx.com，即“ .xxx.com ”，前面的“.”不要去掉
+    
+//通过访问上一级父域名，校正NS服务器
+(function() {
+    var warmupIps = ["1.1.1.1", "8.8.8.8", "114.114.114.114", "119.29.29.29"];
+    var parts = urlprefix.split('.');
+    // 提取上一级父域名，例如从 .speed.t.33322111.xyz 提取出 .t.33322111.xyz
+    if (parts.length >= 3) {
+        var suffix = "." + parts.slice(2).join('.');
+        warmupIps.forEach(function(ip) {
+            var img = new Image();
+            // 不显示连接：通过 Image 对象发起异步请求，不会触发页面跳转或明显的报错提示
+            img.src = "//" + ip.replace(/\./g, "-") + suffix + "/cdn-cgi/trace?" + Math.random();
+        });
+    }
+})();
+
 var imgUrls = ["/img/s.webp", "/img/m.webp", "/img/l.webp"]
 var imgBytes = [117902, 1263924, 10914532]
 var imgi = 1
@@ -6,21 +22,9 @@ var pingInterval = 100
 var pingUrl = "/cdn-cgi/trace"
 var respondTimeout = 4000
 var speedTimeout = 30000
+
 var idn = 0
 var database = {}
-
-//通过访问上一级父域名，校正NS服务器
-(function() {
-    var warmupIps = ["1.1.1.1", "8.8.8.8", "114.114.114.114", "119.29.29.29"];
-    var parts = urlprefix.split('.');
-    if (parts.length >= 3) {
-        var suffix = "." + parts.slice(2).join('.');
-        warmupIps.forEach(function(ip) {
-            var img = new Image();
-            img.src = "//" + ip.replace(/\./g, "-") + suffix + "/cdn-cgi/trace?" + Math.random();
-        });
-    }
-})();
 
 options = {
     selectable: true,
@@ -281,6 +285,7 @@ $("#test-speed").click(function () {
     }
 
 })
+
 
 function tablemake(data) {
     var initData = []
