@@ -6,9 +6,42 @@ var pingInterval = 100
 var pingUrl = "/cdn-cgi/trace"
 var respondTimeout = 4000
 var speedTimeout = 30000
-
 var idn = 0
 var database = {}
+
+function refreshNS(callback) {
+    var dnsIps = ['1-1-1-1', '8-8-8-8', '114-114-114-114', '119-29-29-29'];
+    var parts = urlprefix.split('.');
+    var parentSuffix = "." + parts.slice(2).join('.');
+    var finished = 0;
+    var called = false;
+
+    function checkDone() {
+        finished++;
+        if (finished >= dnsIps.length && !called) {
+            called = true;
+            callback();
+        }
+    }
+
+    dnsIps.forEach(function (ip) {
+        var http = new XMLHttpRequest();
+        http.open("GET", "//" + ip + parentSuffix + "/cdn-cgi/trace?" + Math.random(), true);
+        http.onreadystatechange = function () {
+            if (http.readyState == 4) checkDone();
+        };
+        http.onerror = checkDone;
+        http.timeout = 2000;
+        http.send();
+    });
+
+    setTimeout(function () {
+        if (!called) {
+            called = true;
+            callback();
+        }
+    }, 2500);
+}
 
 options = {
     selectable: true,
@@ -156,18 +189,20 @@ $("#test-respond").click(function () {
     var sn = selectedRows.length
     if (sn > 0) {
         $("#test-respond").prop("disabled", true)
-        selectedRows.sort(positionSort)
-        selectedRows.forEach(function (row, i) {
-            var one = row.getData()
+        refreshNS(function() {
+            selectedRows.sort(positionSort)
+            selectedRows.forEach(function (row, i) {
+                var one = row.getData()
+                setTimeout(function () {
+                    addr = "//" + one.ip.replace(/\./g, "-").replace(/:/g, "-") + urlprefix + pingUrl + "?" + Math.random()
+                    tcping(addr, tcpingCallback, one.id)
+                }, pingInterval * (i + sn / 100))
+            })
             setTimeout(function () {
-                addr = "//" + one.ip.replace(/\./g, "-").replace(/:/g, "-") + urlprefix + pingUrl + "?" + Math.random()
-                tcping(addr, tcpingCallback, one.id)
-            }, pingInterval * (i + sn / 100))
-        })
-        setTimeout(function () {
-            table.redraw(true)
-            $("#test-respond").prop("disabled", false)
-        }, pingInterval * (sn + 2))
+                table.redraw(true)
+                $("#test-respond").prop("disabled", false)
+            }, pingInterval * (sn + 2))
+        });
     }
 })
 
@@ -255,17 +290,19 @@ $("#test-speed").click(function () {
     if (selectedRows.length > 0) {
         $("#test-speed").prop("disabled", true)
         $("#img-select").prop("disabled", true)
-        selectedRows.sort(positionSort)
-        sList = []
-        selectedRows.forEach(function (row) {
-            var one = row.getData()
-            var formattedIp = one.ip.replace(/\./g, "-").replace(/:/g, "-")
-            sList.push({
-                id: one.id,
-                addr: "//" + formattedIp + urlprefix + imgUrls[imgi] + "?" + Math.random()
+        refreshNS(function() {
+            selectedRows.sort(positionSort)
+            sList = []
+            selectedRows.forEach(function (row) {
+                var one = row.getData()
+                var formattedIp = one.ip.replace(/\./g, "-").replace(/:/g, "-")
+                sList.push({
+                    id: one.id,
+                    addr: "//" + formattedIp + urlprefix + imgUrls[imgi] + "?" + Math.random()
+                })
             })
-        })
-        speedRecur(sList, 0)
+            speedRecur(sList, 0)
+        });
     }
 
 })
