@@ -1,7 +1,7 @@
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
-    const targetHost = "xxx.com"; // 替换为你自己的目标域名
+    const targetHost = "xxx.com"; // 替换为你自己的网页前端域名
     const hostname = url.hostname;
     const firstPart = hostname.split('.')[0];
     const dashCount = (firstPart.match(/-/g) || []).length;
