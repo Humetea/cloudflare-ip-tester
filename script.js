@@ -3,14 +3,14 @@ var urlprefix = ".speed.t.33322111.xyz"   //修改为自己的域名，如xxx.co
 //通过访问上一级父域名，校正NS服务器
 (function() {
     var warmupIps = ["1.1.1.1", "8.8.8.8", "114.114.114.114", "119.29.29.29"];
-    var parts = urlprefix.split('.');
-    // 提取上一级父域名，例如从 .speed.t.33322111.xyz 提取出 .t.33322111.xyz
-    if (parts.length >= 3) {
-        var suffix = "." + parts.slice(2).join('.');
+    var cleanPrefix = urlprefix.startsWith('.') ? urlprefix.substring(1) : urlprefix;
+    var parts = cleanPrefix.split('.');
+    
+    if (parts.length >= 2) {
+        var suffix = "." + parts.slice(1).join('.');
         warmupIps.forEach(function(ip) {
             var img = new Image();
-            // 不显示连接：通过 Image 对象发起异步请求，不会触发页面跳转或明显的报错提示
-            img.src = "//" + ip.replace(/\./g, "-") + suffix + "/cdn-cgi/trace?" + Math.random();
+            img.src = "//" + ip.replace(/\./g, "-") + suffix + "/cdn-cgi/trace?q=" + Math.random();
         });
     }
 })();
