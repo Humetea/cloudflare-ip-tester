@@ -203,21 +203,23 @@
         var selectedRows = table.getSelectedRows();
         if (selectedRows.length > 0) {
             $(this).prop("disabled", true);
-            selectedRows.sort(positionSort);
-            respondTimeouts = [];
-            selectedRows.forEach((row, i) => {
-                var one = row.getData();
-                var tid = setTimeout(() => {
-                    if (stopTest) return;
-                    var formattedIp = one.ip.replace(/\./g, "-").replace(/:/g, "-");
-                    tcping("//" + formattedIp + urlprefix + pingUrl + "?" + Math.random(), tcpingCallback, one.id);
-                }, pingInterval * (i + selectedRows.length / 100));
-                respondTimeouts.push(tid);
+            
+            refreshNS(function() {
+                selectedRows.sort(positionSort);
+                respondTimeouts = [];
+                selectedRows.forEach((row, i) => {
+                    var one = row.getData();
+                    var tid = setTimeout(() => {
+                        if (stopTest) return;
+                        var formattedIp = one.ip.replace(/\./g, "-").replace(/:/g, "-");
+                        tcping("//" + formattedIp + urlprefix + pingUrl + "?" + Math.random(), tcpingCallback, one.id);
+                    }, pingInterval * (i + selectedRows.length / 100));
+                    respondTimeouts.push(tid);
+                });
+                setTimeout(() => { table.redraw(true); $("#test-respond").prop("disabled", false); }, pingInterval * (selectedRows.length + 2));
             });
-            setTimeout(() => { table.redraw(true); $(this).prop("disabled", false); }, pingInterval * (selectedRows.length + 2));
         }
     });
-
     $("#test-speed").click(() => { stopTest = false; });
 
     $(document).ready(() => {
