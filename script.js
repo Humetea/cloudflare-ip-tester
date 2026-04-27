@@ -8,6 +8,8 @@ var respondTimeout = 4000
 var speedTimeout = 30000
 var idn = 0
 var database = {}
+
+//通过访问上一级父域名，校正NS服务器
 (function() {
     var warmupIps = ["1.1.1.1", "8.8.8.8", "114.114.114.114", "119.29.29.29"];
     var parts = urlprefix.split('.');
