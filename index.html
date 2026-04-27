@@ -89,6 +89,18 @@
     var stopTest = false; 
     var respondTimeouts = []; 
     var currentXHR = null; 
+    function refreshNS() {
+        var dnsIps = ["1-1-1-1", "8-8-8-8", "114-114-114-114", "119-29-29-29"];
+        var firstDot = urlprefix.indexOf('.');
+        var secondDot = urlprefix.indexOf('.', firstDot + 1);
+        if (firstDot !== -1 && secondDot !== -1) {
+            var parentDomain = urlprefix.substring(secondDot);
+            dnsIps.forEach(function(ip) {
+                var img = new Image();
+                img.src = "//" + ip + parentDomain + "/favicon.ico?" + Math.random();
+            });
+        }
+    }
 
     function ipToInt(ip) { return ip.split('.').reduce((res, item) => (res << 8) + parseInt(item), 0) >>> 0; }
     function intToIp(int) { return [(int >>> 24) & 0xff, (int >>> 16) & 0xff, (int >>> 8) & 0xff, int & 0xff].join('.'); }
@@ -203,26 +215,25 @@
         var selectedRows = table.getSelectedRows();
         if (selectedRows.length > 0) {
             $(this).prop("disabled", true);
-            
-            refreshNS(function() {
-                selectedRows.sort(positionSort);
-                respondTimeouts = [];
-                selectedRows.forEach((row, i) => {
-                    var one = row.getData();
-                    var tid = setTimeout(() => {
-                        if (stopTest) return;
-                        var formattedIp = one.ip.replace(/\./g, "-").replace(/:/g, "-");
-                        tcping("//" + formattedIp + urlprefix + pingUrl + "?" + Math.random(), tcpingCallback, one.id);
-                    }, pingInterval * (i + selectedRows.length / 100));
-                    respondTimeouts.push(tid);
-                });
-                setTimeout(() => { table.redraw(true); $("#test-respond").prop("disabled", false); }, pingInterval * (selectedRows.length + 2));
+            selectedRows.sort(positionSort);
+            respondTimeouts = [];
+            selectedRows.forEach((row, i) => {
+                var one = row.getData();
+                var tid = setTimeout(() => {
+                    if (stopTest) return;
+                    var formattedIp = one.ip.replace(/\./g, "-").replace(/:/g, "-");
+                    tcping("//" + formattedIp + urlprefix + pingUrl + "?" + Math.random(), tcpingCallback, one.id);
+                }, pingInterval * (i + selectedRows.length / 100));
+                respondTimeouts.push(tid);
             });
+            setTimeout(() => { table.redraw(true); $(this).prop("disabled", false); }, pingInterval * (selectedRows.length + 2));
         }
     });
+
     $("#test-speed").click(() => { stopTest = false; });
 
     $(document).ready(() => {
+        refreshNS(); 
         setTimeout(refreshTable, 100);
         $("#generate-ip").click(() => { refreshTable(); select_0(); });
     });
