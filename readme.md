@@ -24,7 +24,7 @@
 
 ##  如何部署
 
-### ⏰ 说明：需要三个二级域名，test.xxx.com作为网页前端，t.xxx.com作为后端NS解析，test.t.xxx.com作为后端测速（一定是t.xxx.com的下一级域名，生成SSL泛域名证书）。
+### ⏰ 说明：需要三个二级域名，test.xxx.com作为网页前端，t.xxx.com作为后端NS解析，test.t.xxx.com作为后端测速（一定是t.xxx.com的子域名，生成子域名的泛域名SSL证书）。
 
 ### 🏀 1.GitHub部署：
 1.  forks项目，修改forks项目下script.js文件第1行的域名为test.t.xxx.com（后端测速），然后找到该项目下Settings的Pages，Branch选择master /root文件夹，输入自定义域名Custom domain（填入前端域名test.xxx.com）勾选Enforce HTTPS ，保存部署。
