@@ -35,7 +35,7 @@
    
 ### ⏰ 2.Cloudflare Pages部署：
 
-1.  forks项目，修改forks项目下script.js文件第1行的域名为为test.t.xxx.com（后端测速），点击部署[![Deploy to Cloudflare Pages](https://img.shields.io/badge/Deploy%20to-Cloudflare%20Pages-0ed326?style=for-the-badge&logo=cloudflare&logoColor=white)](https://dash.cloudflare.com/?to=/:account/pages/new/upload?url=https://github.com/Humetea/cloudflare-ip-tester)，项目名称随便填，Pages设置里添加自定义域名test.xxx.com（前端网页）
+1.  forks项目，修改forks项目下script.js文件第1行的域名为为test.t.xxx.com（后端测速），点击部署[![Deploy to Cloudflare Pages](https://deploy.workers.cloudflare.com/button)](https://dash.cloudflare.com/?to=/:account/pages/new/upload?url=github.com/Humetea/cloudflare-ip-tester)，项目名称随便填，Pages设置里添加自定义域名test.xxx.com（前端网页）
 2.  自己域名服务商：NS托管到Cloudflare。
 3.  Cloudflare后台：新建Workers，复制项目中Cloudflare Workers配置文件的代码，记得修改 “ xxx.com ” 为“test.xxx.com”（网页前端），此处前面不加“.”，并为该Workers添加域名 “ .test.t.xxx.com ”（后端测速）和路由“ *.test.t.xxx.com/* ”（不要漏掉域名前后的符号*/），检查该托管域名下 SSL/TLS →→ 边缘证书 “*.test.t.xxx.com, xxx.com, test.t.xxx.com”状态有效后，进入下一步。
 4. Cloudflare后台：DNS添加子域名*.t(注意前面有*和.)，对应三条NS记录分别为ns-hetzner.sslip.io、ns-ovh.sslip.io、ns-do-sg.sslip.io，（NS托管到sslip.io项目），同时前端域名test.xxx.com  CNAME解析自己域名到该Github项目Pages网址，开启橙色云朵，成功CNAME后，对应的Github项目下会有个CNAME文件，内容为自己前端域名。
