@@ -1,19 +1,6 @@
 var urlprefix = ".speed.t.33322111.xyz"   //修改为自己的域名，如xxx.com，即“ .xxx.com ”，前面的“.”不要去掉
     
-//通过访问上一级父域名，校正NS服务器
-(function() {
-    var warmupIps = ["1.1.1.1", "8.8.8.8", "114.114.114.114", "119.29.29.29"];
-    var cleanPrefix = urlprefix.startsWith('.') ? urlprefix.substring(1) : urlprefix;
-    var parts = cleanPrefix.split('.');
-    
-    if (parts.length >= 2) {
-        var suffix = "." + parts.slice(1).join('.');
-        warmupIps.forEach(function(ip) {
-            var img = new Image();
-            img.src = "//" + ip.replace(/\./g, "-") + suffix + "/cdn-cgi/trace?q=" + Math.random();
-        });
-    }
-})();
+
 
 var imgUrls = ["/img/s.webp", "/img/m.webp", "/img/l.webp"]
 var imgBytes = [117902, 1263924, 10914532]
