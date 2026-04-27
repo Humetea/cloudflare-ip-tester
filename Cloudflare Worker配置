@@ -1,27 +1,28 @@
 export default {
-async fetch(request, env, ctx) {
-const url = new URL(request.url);
-const targetHost = "xxx.com"; // 只需修改xxx.com为自己域名。
-const hostname = url.hostname;
-const sub = hostname.replace(`.${targetHost}`, "");
-const dashCount = (sub.match(/-/g) || []).length;
+  async fetch(request, env, ctx) {
+    const url = new URL(request.url);
+    const targetHost = "test.33322111.xyz"; // 替换为你自己的目标域名
+    const hostname = url.hostname;
+    const firstPart = hostname.split('.')[0];
+    const dashCount = (firstPart.match(/-/g) || []).length;
 
-if (dashCount < 3) {
-  return fetch(request);
-}
+    if (dashCount < 3) {
+      return fetch(request);
+    }
 
-url.host = targetHost;
-const newHeaders = new Headers(request.headers);
-newHeaders.set("Host", targetHost);
-newHeaders.set("X-Forwarded-Host", request.headers.get("host"));
+    url.host = targetHost;
+    
+    const newHeaders = new Headers(request.headers);
+    newHeaders.set("Host", targetHost);
+    newHeaders.set("X-Forwarded-Host", hostname); 
 
-const modifiedRequest = new Request(url.toString(), {
-  method: request.method,
-  headers: newHeaders,
-  body: request.body,
-  redirect: "follow"
-});
-return fetch(modifiedRequest);
+    const modifiedRequest = new Request(url.toString(), {
+      method: request.method,
+      headers: newHeaders,
+      body: request.body,
+      redirect: "follow"
+    });
 
-},
+    return fetch(modifiedRequest);
+  },
 };
