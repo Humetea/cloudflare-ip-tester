@@ -1,0 +1,6 @@
+name = "cf-ip-tester"
+main = "script.js"
+compatibility_date = "2026-04-27"
+
+[assets]
+directory = "."
