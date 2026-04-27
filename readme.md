@@ -2,6 +2,8 @@
 
 [演示地址https://test.33322111.xyz ](https://test.33322111.xyz) 已开防护墙，仅CN区域访问可测速。
 
+[![Deploy to Cloudflare Pages](https://deploy.workers.cloudflare.com/button)](https://dash.cloudflare.com/?to=/:account/pages/new?project-name=cf-test&source=github&repository=https://github.com/Humetea/cloudflare-ip-tester)
+
 
 ## 原有功能
 
